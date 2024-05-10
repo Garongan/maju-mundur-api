@@ -1,1 +1,1 @@
-![ERD](/media/alvindo/Data/bootcamp/java/maju-mundur/erd.drawio.png)
+![ERD](/erd.drawio.png)
