@@ -1,15 +1,18 @@
 package com.enigma.majumundur.service.impl;
 
 import com.enigma.majumundur.constant.UserRole;
-import com.enigma.majumundur.dto.request.CustomerRequest;
+import com.enigma.majumundur.dto.request.*;
+import com.enigma.majumundur.dto.response.LoginResponse;
+import com.enigma.majumundur.dto.response.RegisterResponse;
 import com.enigma.majumundur.entity.Role;
 import com.enigma.majumundur.entity.UserAccount;
 import com.enigma.majumundur.mapper.RegisterCustomerResponseMapper;
-import com.enigma.majumundur.service.CustomerService;
-import com.enigma.majumundur.service.JwtService;
-import com.enigma.majumundur.service.RoleService;
+import com.enigma.majumundur.mapper.RegisterMerchantResponseMapper;
+import com.enigma.majumundur.repository.UserAccountRepository;
+import com.enigma.majumundur.service.*;
 import com.enigma.majumundur.utils.ValidationUtil;
 import jakarta.annotation.PostConstruct;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -17,16 +20,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import com.enigma.majumundur.dto.request.LoginRequest;
-import com.enigma.majumundur.dto.request.RegisterCustomerRequest;
-import com.enigma.majumundur.dto.request.RegisterMerchantRequest;
-import com.enigma.majumundur.dto.response.LoginResponse;
-import com.enigma.majumundur.dto.response.RegisterResponse;
-import com.enigma.majumundur.repository.UserAccountRepository;
-import com.enigma.majumundur.service.AuthService;
-
-import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -43,6 +36,8 @@ public class AuthServiceImpl implements AuthService {
     private final JwtService jwtService;
     private final ValidationUtil validationUtil;
     private final RegisterCustomerResponseMapper registerCustomerResponseMapper;
+    private final RegisterMerchantResponseMapper registerMerchantResponseMapper;
+    private final MerchantService merchantService;
 
     @Value("${maju-mundur-api.admin.username}")
     private String adminUsername;
@@ -78,8 +73,9 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public RegisterResponse registerMerchant(RegisterMerchantRequest request) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'registerMerchant'");
+        validationUtil.validate(request);
+        Role role = roleService.saveOrGet(UserRole.ROLE_MERCHANT);
+        return getRegisterResponse(request, role);
     }
 
     @Override
@@ -113,6 +109,21 @@ public class AuthServiceImpl implements AuthService {
                 request.phone(),
                 userAccount);
         return registerCustomerResponseMapper.apply(customerService.saveCustomer(customerRequest));
+    }
+
+    private RegisterResponse getRegisterResponse(RegisterMerchantRequest request, Role role) {
+        UserAccount userAccount = UserAccount.builder()
+                .username(request.username())
+                .password(passwordEncoder.encode(request.password()))
+                .roles(List.of(role))
+                .build();
+        userAccountRepository.saveAndFlush(userAccount);
+        MerchantRequest merchantRequest = new MerchantRequest(
+                request.shopName(),
+                request.phone(),
+                request.address(),
+                userAccount);
+        return registerMerchantResponseMapper.apply(merchantService.saveMerchant(merchantRequest));
     }
 
 }

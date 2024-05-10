@@ -4,6 +4,7 @@ import com.enigma.majumundur.constant.ApiUrl;
 import com.enigma.majumundur.constant.StatusMessage;
 import com.enigma.majumundur.dto.request.LoginRequest;
 import com.enigma.majumundur.dto.request.RegisterCustomerRequest;
+import com.enigma.majumundur.dto.request.RegisterMerchantRequest;
 import com.enigma.majumundur.dto.response.CommonResponse;
 import com.enigma.majumundur.dto.response.LoginResponse;
 import com.enigma.majumundur.dto.response.RegisterResponse;
@@ -26,7 +27,7 @@ public class AuthController {
 
     @Operation(summary = "Login")
     @PostMapping(
-            path = "login",
+            path = "/login",
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE
     )
@@ -38,12 +39,28 @@ public class AuthController {
 
     @Operation(summary = "RegisterCustomer")
     @PostMapping(
-            path = "register-customer",
+            path = "/register-customer",
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     public ResponseEntity<CommonResponse<RegisterResponse>> registerCustomer(@RequestBody RegisterCustomerRequest request) {
         RegisterResponse registerResponse = authService.registerCustomer(request);
+        CommonResponse<RegisterResponse> response = new CommonResponse<>(
+                HttpStatus.CREATED.value(),
+                StatusMessage.SUCCESS_CREATED,
+                registerResponse,
+                null);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @Operation(summary = "RegisterMerchant")
+    @PostMapping(
+            path = "/register-merchant",
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public ResponseEntity<CommonResponse<RegisterResponse>> registerMerchant(@RequestBody RegisterMerchantRequest request) {
+        RegisterResponse registerResponse = authService.registerMerchant(request);
         CommonResponse<RegisterResponse> response = new CommonResponse<>(
                 HttpStatus.CREATED.value(),
                 StatusMessage.SUCCESS_CREATED,

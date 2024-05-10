@@ -8,6 +8,7 @@ import com.enigma.majumundur.repository.CustomerRepository;
 import com.enigma.majumundur.service.CustomerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -18,6 +19,7 @@ public class CustomerServiceImpl implements CustomerService {
     private final CustomerResponseMapper customerResponseMapper;
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public Customer saveCustomer(CustomerRequest request) {
         return customerRepository.saveAndFlush(Customer.builder()
                 .name(request.name())
@@ -28,6 +30,7 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<CustomerResponse> getAllCustomer() {
         return customerRepository.findAll().stream().map(customerResponseMapper).toList();
     }
