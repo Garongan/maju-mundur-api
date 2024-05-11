@@ -50,7 +50,7 @@ class AuthControllerTest {
                 "username",
                 "password"
         );
-        LoginResponse actualLoginResponse = new LoginResponse(
+        LoginResponse loginResponse = new LoginResponse(
                 "example-id",
                 "username",
                 "example-token",
@@ -60,7 +60,7 @@ class AuthControllerTest {
         // stubbing
         Mockito
                 .when(authService.login(actualLoginRequest))
-                .thenReturn(actualLoginResponse);
+                .thenReturn(loginResponse);
 
         // when
         String json = objectMapper.writeValueAsString(actualLoginRequest);
