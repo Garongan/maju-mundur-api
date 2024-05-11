@@ -6,4 +6,5 @@ public class ApiUrl {
     public static final String CUSTOMER = BASE_URL + "/customers";
     public static final String MERCHANT = BASE_URL + "/merchants";
     public static final String PRODUCT = BASE_URL + "/products";
+    public static final String TRANSACTION = BASE_URL + "/transactions";
 }

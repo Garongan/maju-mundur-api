@@ -2,14 +2,10 @@ package com.enigma.majumundur.entity;
 
 import com.enigma.majumundur.constant.TableName;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.List;
 
 @Setter
 @Getter
@@ -31,10 +27,16 @@ public class Customer {
     @Column(name = "address", nullable = false, length = 100)
     private String address;
 
-    @Column(name = "point", nullable = true)
+    @Column(name = "point", nullable = false)
     private Integer point;
 
     @OneToOne
     @JoinColumn(name = "user_account_id", unique = true, nullable = false)
     private UserAccount userAccount;
+
+    @OneToMany(mappedBy = "customer")
+    List<ClaimReward> claimRewards;
+
+    @OneToMany(mappedBy = "customer")
+    List<Transaction> transactions;
 }

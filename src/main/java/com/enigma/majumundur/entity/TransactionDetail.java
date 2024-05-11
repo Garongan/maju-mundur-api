@@ -22,12 +22,8 @@ public class TransactionDetail {
     private Long price;
 
     @ManyToOne
-    @JoinColumn(name = "product_id", nullable = true)
+    @JoinColumn(name = "product_id", nullable = false)
     private Product product;
-
-    @OneToOne
-    @JoinColumn(name = "reward_id", nullable = true)
-    private Reward reward;
 
     @ManyToOne
     @JoinColumn(name = "transaction_id", nullable = false)

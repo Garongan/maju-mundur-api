@@ -53,7 +53,13 @@ public class ProductServiceImpl implements ProductService {
     public ProductResponse getProductById(String id) {
         return productResponseMapper.apply(productRepository
                 .findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found")));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, StatusMessage.PRODUCT_NOT_FOUND)));
+    }
+
+    @Override
+    public Product getOneProductById(String id) {
+        return productRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, StatusMessage.PRODUCT_NOT_FOUND));
     }
 
     @Override
@@ -76,8 +82,7 @@ public class ProductServiceImpl implements ProductService {
     public ProductResponse updateProduct(UpdateProductRequest request) {
         validationUtil.validate(request);
 
-        Product product = productRepository.findById(request.id())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found"));
+        Product product = getOneProductById(request.id());
 
         UserAccount userAccount = userService.getByContext();
         if (!userAccount.getId().equals(request.userAccountId())) {

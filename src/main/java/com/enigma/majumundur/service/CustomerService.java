@@ -10,4 +10,6 @@ public interface CustomerService {
     Customer saveCustomer(CustomerRequest request);
 
     List<CustomerResponse> getAllCustomer();
+
+    Customer getCustomerById(String id);
 }

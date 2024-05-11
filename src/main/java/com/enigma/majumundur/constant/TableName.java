@@ -9,4 +9,5 @@ public class TableName {
     public static final String TRANSACTION = "transaction";
     public static final String TRANSACTION_DETAIL = "transaction_detail";
     public static final String M_REWARD = "m_reward";
+    public static final String CLAIM_REWARD = "claim_reward";
 }

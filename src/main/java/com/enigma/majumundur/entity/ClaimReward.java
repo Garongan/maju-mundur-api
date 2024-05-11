@@ -5,27 +5,26 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.Date;
-import java.util.List;
 
 @Setter
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Entity(name = TableName.TRANSACTION)
-public class Transaction {
+@Entity(name = TableName.CLAIM_REWARD)
+public class ClaimReward {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
-    @Column(name = "trans_date", nullable = false)
+    @Column(name = "claim_date", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
-    private Date transDate;
+    private Date claimDate;
 
     @ManyToOne
     @JoinColumn(name = "customer_id", nullable = false)
     private Customer customer;
 
-    @OneToMany(mappedBy = "transaction", cascade = CascadeType.PERSIST)
-    private List<TransactionDetail> transactionDetails;
+    @OneToOne
+    private Reward rewardId;
 }

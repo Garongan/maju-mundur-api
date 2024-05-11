@@ -1,16 +1,20 @@
 package com.enigma.majumundur.dto.request;
 
 import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotBlank;
 
 public record NewTransactionDetailRequest(
-        @NotNull(message = "quantity is required")
+
         @Min(value = 1, message = "minimum quantity is 1")
         Integer quantity,
-        @NotNull(message = "price is required")
+
         @Min(value = 0, message = "minimum price is 0")
         Long price,
+
+        @NotBlank(message = "product id is required")
         String productId,
+
+        @NotBlank(message = "reward id is required")
         String rewardId
 ) {
 }
