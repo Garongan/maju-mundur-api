@@ -4,6 +4,8 @@ import com.enigma.majumundur.constant.TableName;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
+
 @Setter
 @Getter
 @AllArgsConstructor
@@ -27,4 +29,7 @@ public class Merchant {
     @OneToOne
     @JoinColumn(name = "user_account_id", unique = true, nullable = false)
     private UserAccount userAccount;
+
+    @OneToMany(mappedBy = "merchant")
+    private List<Product> products;
 }
