@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotNull;
 
 public record NewProductRequest(
         @NotBlank(message = "Product name is required")
+        @NotNull(message = "Product name is required")
         String name,
         @NotNull(message = "Product price is required")
         @Min(value = 0, message = "Product price must be greater than 0")
@@ -14,6 +15,7 @@ public record NewProductRequest(
         @Min(value = 0, message = "Product stock must be greater than 0")
         Integer stock,
         @NotBlank(message = "User account id merchant is required")
+        @NotNull(message = "User account id merchant is required")
         String userAccountId
 ) {
 }
