@@ -14,12 +14,14 @@ import com.enigma.majumundur.service.ProductService;
 import com.enigma.majumundur.service.UserService;
 import com.enigma.majumundur.utils.ValidationUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -56,10 +58,17 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<ProductResponse> getAllProducts() {
-        return productRepository.findAll().stream()
-                .map(productResponseMapper)
-                .toList();
+    public Page<ProductResponse> getAllProducts(
+            String direction,
+            String orderBy,
+            Integer currentPage,
+            Integer pageSize
+    ) {
+        Sort sort = Sort.by(Sort.Direction.fromString(direction), orderBy);
+        if (currentPage <= 0) currentPage = 1;
+        Pageable pageable = PageRequest.of(currentPage - 1, pageSize, sort);
+
+        return productRepository.findAll(pageable).map(productResponseMapper);
     }
 
     @Override
@@ -69,6 +78,11 @@ public class ProductServiceImpl implements ProductService {
 
         Product product = productRepository.findById(request.id())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found"));
+
+        UserAccount userAccount = userService.getByContext();
+        if (!userAccount.getId().equals(request.userAccountId())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, StatusMessage.FORBIDDEN_ACCESS);
+        }
 
         Merchant merchant = merchantService.getMerchantByUserAccountId(request.userAccountId());
 

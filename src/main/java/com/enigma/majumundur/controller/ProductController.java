@@ -5,11 +5,14 @@ import com.enigma.majumundur.constant.StatusMessage;
 import com.enigma.majumundur.dto.request.NewProductRequest;
 import com.enigma.majumundur.dto.request.UpdateProductRequest;
 import com.enigma.majumundur.dto.response.CommonResponse;
+import com.enigma.majumundur.dto.response.PaginationResponse;
 import com.enigma.majumundur.dto.response.ProductResponse;
+import com.enigma.majumundur.mapper.PaginationResponseMapper;
 import com.enigma.majumundur.service.ProductService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +26,7 @@ import java.util.List;
 @RequestMapping(ApiUrl.PRODUCT)
 public class ProductController {
     private final ProductService productService;
+    private final PaginationResponseMapper paginationResponseMapper;
 
     @Operation(summary = "Create new product")
     @SecurityRequirement(name = "Authorization")
@@ -64,13 +68,24 @@ public class ProductController {
     @SecurityRequirement(name = "Authorization")
     @PreAuthorize("isAuthenticated()")
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<CommonResponse<List<ProductResponse>>> getAllProducts() {
-        List<ProductResponse> productResponseList = productService.getAllProducts();
+    public ResponseEntity<CommonResponse<List<ProductResponse>>> getAllProducts(
+            @RequestParam(required = false, defaultValue = "asc") String direction,
+            @RequestParam(required = false, defaultValue = "name") String orderBy,
+            @RequestParam(required = false, defaultValue = "1") Integer currentPage,
+            @RequestParam(required = false, defaultValue = "10") Integer pageSize
+    ) {
+        Page<ProductResponse> productResponsePage = productService.getAllProducts(
+                direction,
+                orderBy,
+                currentPage,
+                pageSize
+        );
+        PaginationResponse paginationResponse = paginationResponseMapper.apply(productResponsePage);
         CommonResponse<List<ProductResponse>> commonResponse = new CommonResponse<>(
                 HttpStatus.OK.value(),
                 StatusMessage.SUCCESS_RETRIEVE_LIST,
-                productResponseList,
-                null
+                productResponsePage.getContent(),
+                paginationResponse
         );
         return ResponseEntity.status(HttpStatus.OK).body(commonResponse);
     }

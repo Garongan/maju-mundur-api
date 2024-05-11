@@ -6,5 +6,6 @@ public record PaginationResponse(
         Integer currentPage,
         Integer pageSize,
         Boolean hasNext,
-        Boolean hasPrevious) {
+        Boolean hasPrevious
+) {
 }
