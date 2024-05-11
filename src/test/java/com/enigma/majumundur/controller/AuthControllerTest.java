@@ -51,6 +51,7 @@ class AuthControllerTest {
                 "password"
         );
         LoginResponse actualLoginResponse = new LoginResponse(
+                "example-id",
                 "username",
                 "example-token",
                 List.of("ROLE_USER")

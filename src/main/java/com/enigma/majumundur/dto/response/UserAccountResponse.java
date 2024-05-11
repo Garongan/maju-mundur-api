@@ -2,10 +2,9 @@ package com.enigma.majumundur.dto.response;
 
 import java.util.List;
 
-public record LoginResponse(
+public record UserAccountResponse(
         String id,
         String username,
-        String token,
-        List<String> roles) {
-
+        List<String> roles
+) {
 }

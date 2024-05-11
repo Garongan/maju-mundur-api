@@ -7,8 +7,10 @@ import com.enigma.majumundur.mapper.MerchantResponseMapper;
 import com.enigma.majumundur.repository.MerchantRepository;
 import com.enigma.majumundur.service.MerchantService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -34,4 +36,18 @@ public class MerchantServiceImpl implements MerchantService {
     public List<MerchantResponse> getAllMerchant() {
         return merchantRepository.findAll().stream().map(merchantResponseMapper).toList();
     }
+
+    @Override
+    public Merchant getMerchantById(String id) {
+        return merchantRepository
+                .findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Merchant not found"));
+    }
+
+    @Override
+    public Merchant getMerchantByUserAccountId(String userAccountId) {
+        return merchantRepository.findMerchantByUserAccountId(userAccountId);
+    }
+
+
 }

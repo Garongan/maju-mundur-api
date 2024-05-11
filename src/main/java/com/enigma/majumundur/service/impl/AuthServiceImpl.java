@@ -87,7 +87,11 @@ public class AuthServiceImpl implements AuthService {
 
         UserAccount userAccount = (UserAccount) authenticate.getPrincipal();
         String token = jwtService.generateToken(userAccount);
-        return new LoginResponse(userAccount.getUsername(), token, userAccount.getRoles().stream().map(role -> role.getRole().name()).toList());
+        return new LoginResponse(
+                userAccount.getId(),
+                userAccount.getUsername(),
+                token,
+                userAccount.getRoles().stream().map(role -> role.getRole().name()).toList());
     }
 
     @Override

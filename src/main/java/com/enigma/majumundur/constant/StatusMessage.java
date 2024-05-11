@@ -8,4 +8,7 @@ public class StatusMessage {
     public static final String SUCCESS_CREATED = "Success created";
     public static final String SUCCESS_RETRIEVE_LIST = "Success retrieve list";
     public static final String SUCCESS = "Success";
+    public static final String SUCCESS_UPDATED = "Success updated";
+    public static final String SUCCESS_DELETED = "Success deleted";
+    public static final String FORBIDDEN_ACCESS = "Forbidden access";
 }

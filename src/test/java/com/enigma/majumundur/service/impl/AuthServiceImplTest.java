@@ -199,12 +199,14 @@ class AuthServiceImplTest {
         LoginRequest loginRequest = new LoginRequest("example-username", "example-password");
         Role expectedRole = Role.builder().role(UserRole.ROLE_ADMIN).build();
         UserAccount expectedUserAccount = UserAccount.builder()
+                .id("example-id")
                 .username(loginRequest.username())
                 .password(loginRequest.password())
                 .roles(List.of(expectedRole))
                 .build();
         String expectedToken = "example-token";
         LoginResponse expectedLoginResponse = new LoginResponse(
+                expectedUserAccount.getId(),
                 expectedUserAccount.getUsername(),
                 expectedToken,
                 expectedUserAccount.getRoles().stream().map(role -> role.getRole().name()).toList()
@@ -229,6 +231,7 @@ class AuthServiceImplTest {
         UserAccount actualUserAccount = (UserAccount) authenticate.getPrincipal();
         String actualToken = jwtService.generateToken(expectedUserAccount);
         LoginResponse actualLoginResponse = new LoginResponse(
+                actualUserAccount.getId(),
                 actualUserAccount.getUsername(),
                 actualToken,
                 actualUserAccount.getRoles().stream().map(role -> role.getRole().name()).toList()

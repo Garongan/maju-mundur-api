@@ -10,4 +10,8 @@ public interface MerchantService {
     Merchant saveMerchant(MerchantRequest request);
 
     List<MerchantResponse> getAllMerchant();
+
+    Merchant getMerchantById(String id);
+
+    Merchant getMerchantByUserAccountId(String userAccountId);
 }
