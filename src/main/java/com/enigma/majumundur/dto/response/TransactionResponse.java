@@ -5,7 +5,7 @@ import java.util.List;
 public record TransactionResponse(
         String id,
         String transactionDate,
-        Integer point,
+        Integer pointEarned,
         String customerId,
         List<TransactionDetailResponse> details
 ) {

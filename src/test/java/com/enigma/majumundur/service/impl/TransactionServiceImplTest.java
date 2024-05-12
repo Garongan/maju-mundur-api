@@ -53,7 +53,6 @@ class TransactionServiceImplTest {
                 "example-reward-id"
         );
         NewTransactionRequest newTransactionRequest = new NewTransactionRequest(
-                1,
                 "example-customer-id",
                 List.of(newTransactionDetailRequest)
         );

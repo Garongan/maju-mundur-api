@@ -15,10 +15,14 @@ public class TransactionResponseMapper implements Function<Transaction, Transact
 
     @Override
     public TransactionResponse apply(Transaction transaction) {
+        long totalPrice = transaction.getTransactionDetails()
+                .stream()
+                .map(transactionDetail -> transactionDetail.getQuantity() * transactionDetail.getPrice())
+                .mapToLong(Long::longValue).sum();
         return new TransactionResponse(
                 transaction.getId(),
                 transaction.getTransDate().toString(),
-                transaction.getCustomer().getPoint(),
+                ((int) (totalPrice / 1000)),
                 transaction.getCustomer().getId(),
                 transaction.getTransactionDetails().stream().map(transactionDetailResponseMapper).toList()
         );
