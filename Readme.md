@@ -1,10 +1,27 @@
 # Project: Maju Mundur API
 API for Maju Mundur Application
 
+## Software digunakan
+- springboot java
+- postgreSQL database
+
 ## ERD
+Database Schema dibuat dijelaskan dalam bentuk erd
 
 ![ERD](/erd.drawio.png)
 
+## Mohon diperhatikan
+- tidak dapat delete produt yang sudah ter-relasi dengan transaction (error constraint)
+- merchant dan customer dapat melakukan registrasi dengan fitur:
+  - register customer
+  - register merchant
+- merchant dapat melakukan crud menggunakan fitur seluruh fitur dari product controller
+- customer dapat melihat all product dan product by id dengan fitur:
+  - get all product
+  - get product by id
+- setiap customer transaksi, customer mendapatkan point dengan nilai total price / 1000
+- merchant dapat melihat history pembelian product dia, dengan menggunakan fitur:
+  - get history merchant transaction, sesuai dengan user account id merchant yang login
 
 ## Run Locally
 
