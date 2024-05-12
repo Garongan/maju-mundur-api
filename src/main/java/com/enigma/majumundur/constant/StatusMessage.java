@@ -15,4 +15,8 @@ public class StatusMessage {
     public static final String PRODUCT_NOT_FOUND = "Product not found";
     public static final String REWARD_NOT_FOUND = "Reward not found";
     public static final String CUSTOMER_POINT_NOT_ENOUGH = "Customer point is not enough";
+    public static final String CONFLICT = "Data already exist";
+    public static final String BAD_REQUEST = "Bad request";
+    public static final String UNAUTHORIZED = "Unauthorized";
+    public static final String ACCESS_DENIED = "Access denied";
 }
