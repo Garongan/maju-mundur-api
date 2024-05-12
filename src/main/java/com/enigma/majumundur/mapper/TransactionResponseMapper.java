@@ -17,7 +17,7 @@ public class TransactionResponseMapper implements Function<Transaction, Transact
     public TransactionResponse apply(Transaction transaction) {
         return new TransactionResponse(
                 transaction.getId(),
-                transaction.getTransDate(),
+                transaction.getTransDate().toString(),
                 transaction.getCustomer().getPoint(),
                 transaction.getCustomer().getId(),
                 transaction.getTransactionDetails().stream().map(transactionDetailResponseMapper).toList()

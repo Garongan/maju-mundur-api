@@ -59,4 +59,18 @@ public class TransactionController {
         );
         return ResponseEntity.status(HttpStatus.OK).body(commonResponse);
     }
+
+    @Operation(summary = "Get Merchant History Transaction")
+    @SecurityRequirement(name = "Authorization")
+    @PreAuthorize("hasRole('MERCHANT') and isAuthenticated()")
+    @GetMapping(value = "/history", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<CommonResponse<List<TransactionResponse>>> getHistoryTransaction() {
+        List<TransactionResponse> transactionResponseList = transactionService.getMerchantHistoryTransaction();
+        CommonResponse<List<TransactionResponse>> commonResponse = new CommonResponse<>(
+                HttpStatus.OK.value(),
+                StatusMessage.SUCCESS_RETRIEVE_LIST,
+                transactionResponseList,
+                null);
+        return ResponseEntity.status(HttpStatus.OK).body(commonResponse);
+    }
 }

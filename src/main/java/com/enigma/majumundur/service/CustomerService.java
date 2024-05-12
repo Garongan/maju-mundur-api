@@ -12,4 +12,6 @@ public interface CustomerService {
     List<CustomerResponse> getAllCustomer();
 
     Customer getCustomerById(String id);
+
+    void setCustomerPoint(String id, Integer point);
 }

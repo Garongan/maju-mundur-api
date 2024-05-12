@@ -26,7 +26,7 @@ public class MerchantController {
 
     @Operation(summary = "Get All Merchant")
     @SecurityRequirement(name = "Authorization")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') and isAuthenticated()")
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<CommonResponse<List<MerchantResponse>>> getAllMerchant() {
         List<MerchantResponse> merchantResponseList = merchantService.getAllMerchant();

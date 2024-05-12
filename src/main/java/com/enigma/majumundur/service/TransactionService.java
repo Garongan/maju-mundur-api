@@ -8,4 +8,6 @@ import java.util.List;
 public interface TransactionService {
     TransactionResponse createTransaction(NewTransactionRequest request);
     List<TransactionResponse> getAllTransactions();
+
+    List<TransactionResponse> getMerchantHistoryTransaction();
 }

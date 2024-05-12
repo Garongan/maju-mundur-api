@@ -45,4 +45,11 @@ public class CustomerServiceImpl implements CustomerService {
                 .findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, StatusMessage.CUSTOMER_NOT_FOUND));
     }
+
+    @Override
+    public void setCustomerPoint(String id, Integer point) {
+        Customer customer = getCustomerById(id);
+        customer.setPoint(customer.getPoint() - point);
+        customerRepository.saveAndFlush(customer);
+    }
 }

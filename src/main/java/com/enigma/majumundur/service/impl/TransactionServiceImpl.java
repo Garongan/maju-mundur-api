@@ -2,14 +2,14 @@ package com.enigma.majumundur.service.impl;
 
 import com.enigma.majumundur.dto.request.NewTransactionRequest;
 import com.enigma.majumundur.dto.response.TransactionResponse;
-import com.enigma.majumundur.entity.Customer;
-import com.enigma.majumundur.entity.Transaction;
-import com.enigma.majumundur.entity.TransactionDetail;
+import com.enigma.majumundur.entity.*;
 import com.enigma.majumundur.mapper.TransactionDetailMapper;
 import com.enigma.majumundur.mapper.TransactionResponseMapper;
 import com.enigma.majumundur.repository.TransactionRepository;
 import com.enigma.majumundur.service.CustomerService;
+import com.enigma.majumundur.service.MerchantService;
 import com.enigma.majumundur.service.TransactionService;
+import com.enigma.majumundur.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,6 +26,8 @@ public class TransactionServiceImpl implements TransactionService {
     private final CustomerService customerService;
     private final TransactionDetailMapper transactionDetailMapper;
     private final TransactionResponseMapper transactionResponseMapper;
+    private final UserService userService;
+    private final MerchantService merchantService;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -55,5 +57,12 @@ public class TransactionServiceImpl implements TransactionService {
     @Transactional(readOnly = true)
     public List<TransactionResponse> getAllTransactions() {
         return transactionRepository.findAll().stream().map(transactionResponseMapper).toList();
+    }
+
+    @Override
+    public List<TransactionResponse> getMerchantHistoryTransaction() {
+        UserAccount userAccount = userService.getByContext();
+        Merchant merchant = merchantService.getMerchantByUserAccountId(userAccount.getId());
+        return transactionRepository.getMerchantHistoryTransaction(merchant.getId());
     }
 }

@@ -48,6 +48,4 @@ public class MerchantServiceImpl implements MerchantService {
     public Merchant getMerchantByUserAccountId(String userAccountId) {
         return merchantRepository.findMerchantByUserAccountId(userAccountId);
     }
-
-
 }

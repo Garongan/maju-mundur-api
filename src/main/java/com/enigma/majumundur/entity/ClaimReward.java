@@ -26,5 +26,5 @@ public class ClaimReward {
     private Customer customer;
 
     @OneToOne
-    private Reward rewardId;
+    private Reward reward;
 }
