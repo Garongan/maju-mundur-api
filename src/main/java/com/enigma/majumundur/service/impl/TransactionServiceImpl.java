@@ -60,6 +60,7 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<TransactionResponse> getMerchantHistoryTransaction() {
         UserAccount userAccount = userService.getByContext();
         Merchant merchant = merchantService.getMerchantByUserAccountId(userAccount.getId());
