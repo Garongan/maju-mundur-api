@@ -594,7 +594,7 @@ Start the swagger ui
     {
       "id": "<string>",
       "transactionDate": "<string>",
-      "point": "<integer>",
+      "pointEarned": "<integer>",
       "customerId": "<string>",
       "details": [
         {
@@ -614,7 +614,7 @@ Start the swagger ui
     {
       "id": "<string>",
       "transactionDate": "<string>",
-      "point": "<integer>",
+      "pointEarned": "<integer>",
       "customerId": "<string>",
       "details": [
         {
@@ -674,7 +674,7 @@ Start the swagger ui
     {
       "id": "<string>",
       "transactionDate": "<string>",
-      "point": "<integer>",
+      "pointEarned": "<integer>",
       "customerId": "<string>",
       "details": [
         {
@@ -694,7 +694,7 @@ Start the swagger ui
     {
       "id": "<string>",
       "transactionDate": "<string>",
-      "point": "<integer>",
+      "pointEarned": "<integer>",
       "customerId": "<string>",
       "details": [
         {
@@ -729,7 +729,7 @@ Start the swagger ui
 ## End-point: Create new transaction
 ### Method: POST
 >```
->{{baseUrl}}/api/transactions?customerId=<string>&details=[object Object],[object Object]&point=<integer>
+>{{baseUrl}}/api/transactions?customerId=<string>&details=[object Object],[object Object]
 >```
 ### Headers
 
@@ -744,7 +744,6 @@ Start the swagger ui
 |---|---|
 |customerId|<string>|
 |details|[object Object],[object Object]|
-|point|<integer>|
 
 
 ### 🔑 Authentication bearer
@@ -762,7 +761,7 @@ Start the swagger ui
   "data": {
     "id": "<string>",
     "transactionDate": "<string>",
-    "point": "<integer>",
+    "pointEarned": "<integer>",
     "customerId": "<string>",
     "details": [
       {
