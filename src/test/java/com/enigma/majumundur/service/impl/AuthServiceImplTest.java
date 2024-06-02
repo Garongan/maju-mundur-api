@@ -1,9 +1,7 @@
 package com.enigma.majumundur.service.impl;
 
 import com.enigma.majumundur.constant.UserRole;
-import com.enigma.majumundur.dto.request.CustomerRequest;
-import com.enigma.majumundur.dto.request.LoginRequest;
-import com.enigma.majumundur.dto.request.MerchantRequest;
+import com.enigma.majumundur.dto.request.*;
 import com.enigma.majumundur.dto.response.LoginResponse;
 import com.enigma.majumundur.dto.response.RegisterResponse;
 import com.enigma.majumundur.entity.Customer;
@@ -21,25 +19,33 @@ import com.enigma.majumundur.utils.ValidationUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
 @SpringBootTest
 @ExtendWith(MockitoExtension.class)
 class AuthServiceImplTest {
 
-    @Mock
+    @MockBean
     private UserAccountRepository userAccountRepository;
     @Mock
     private RoleService roleService;
+    @Mock
+    private PasswordEncoder passwordEncoder;
     @Mock
     private CustomerService customerService;
     @Mock
@@ -54,10 +60,22 @@ class AuthServiceImplTest {
     private AuthenticationManager authenticationManager;
     @Mock
     private JwtService jwtService;
+    @InjectMocks
+    private AuthServiceImpl authServiceImpl;
 
     @BeforeEach
     void setUp() {
-
+        authServiceImpl = new AuthServiceImpl(
+                userAccountRepository,
+                roleService,
+                passwordEncoder,
+                customerService,
+                authenticationManager,
+                jwtService,
+                validationUtil,
+                registerCustomerResponseMapper,
+                registerMerchantResponseMapper,
+                merchantService);
     }
 
     @Test
@@ -73,39 +91,55 @@ class AuthServiceImplTest {
                 .build();
 
         // stubbing
-        Mockito
-                .when(userAccountRepository.saveAndFlush(expectedUserAccount))
-                .thenReturn(expectedUserAccount);
-        Mockito
-                .when(roleService.saveOrGet(UserRole.ROLE_ADMIN))
+        when(roleService.saveOrGet(UserRole.ROLE_ADMIN))
                 .thenReturn(expectedAdminRole);
-        Mockito
-                .when(roleService.saveOrGet(UserRole.ROLE_MERCHANT))
+        when(roleService.saveOrGet(UserRole.ROLE_MERCHANT))
                 .thenReturn(expectedMerchantRole);
-        Mockito
-                .when(roleService.saveOrGet(UserRole.ROLE_CUSTOMER))
+        when(roleService.saveOrGet(UserRole.ROLE_CUSTOMER))
                 .thenReturn(expectedCustomerRole);
+        when(userAccountRepository.saveAndFlush(expectedUserAccount))
+                .thenReturn(expectedUserAccount);
 
         // when
-        UserAccount actualUserAccount = userAccountRepository.saveAndFlush(expectedUserAccount);
-        Role actualAdminRole = roleService.saveOrGet(UserRole.ROLE_ADMIN);
-        Role actualMerchantRole = roleService.saveOrGet(UserRole.ROLE_MERCHANT);
-        Role actualCustomerRole = roleService.saveOrGet(UserRole.ROLE_CUSTOMER);
+        authServiceImpl.initAdmin();
 
         // then
-        assertEquals(expectedUserAccount, actualUserAccount);
-        assertEquals(expectedAdminRole, actualAdminRole);
-        assertEquals(expectedMerchantRole, actualMerchantRole);
-        assertEquals(expectedCustomerRole, actualCustomerRole);
+        verify(roleService, times(1)).saveOrGet(UserRole.ROLE_ADMIN);
+        verify(roleService, times(1)).saveOrGet(UserRole.ROLE_MERCHANT);
+        verify(roleService, times(1)).saveOrGet(UserRole.ROLE_CUSTOMER);
+        verify(userAccountRepository, times(1)).saveAndFlush(any(UserAccount.class));
+    }
+
+    @Test
+    void shouldNotInitAdminWhenAlreadyExists() {
+        // given
+        UserAccount expectedAdminAccount = UserAccount.builder().username("admin-user").build();
+
+        // stubbing
+        when(userAccountRepository.findByUsername("admin-user"))
+                .thenReturn(Optional.of(expectedAdminAccount));
+
+        // when
+        Optional<UserAccount> actualAdminAccount = userAccountRepository.findByUsername("admin-user");
+
+        // then
+        assertTrue(actualAdminAccount.isPresent());
     }
 
     @Test
     void shouldSaveCustomerWhenRegisterCustomer() {
         // given
         Role expectedCustomerRole = Role.builder().role(UserRole.ROLE_CUSTOMER).build();
+        RegisterCustomerRequest registerCustomerRequest = new RegisterCustomerRequest(
+                "example-customer-name",
+                "example-road",
+                "example-phone",
+                "customer",
+                "password"
+        );
         UserAccount expectedUserAccount = UserAccount.builder()
-                .username("customer")
-                .password("password")
+                .username(registerCustomerRequest.username())
+                .password(registerCustomerRequest.password())
                 .roles(List.of(expectedCustomerRole))
                 .build();
         CustomerRequest customerRequest = new CustomerRequest(
@@ -125,24 +159,22 @@ class AuthServiceImplTest {
 
 
         // stubbing
-        Mockito
-                .when(userAccountRepository.saveAndFlush(expectedUserAccount))
+        doNothing().when(validationUtil).validate(registerCustomerRequest);
+        when(userAccountRepository.saveAndFlush(expectedUserAccount))
                 .thenReturn(expectedUserAccount);
-        Mockito
-                .when(roleService.saveOrGet(UserRole.ROLE_CUSTOMER))
+        when(roleService.saveOrGet(UserRole.ROLE_CUSTOMER))
                 .thenReturn(expectedCustomerRole);
-        Mockito
-                .when(registerCustomerResponseMapper.apply(customerService.saveCustomer(customerRequest)))
+        when(registerCustomerResponseMapper.apply(customerService.saveCustomer(customerRequest)))
                 .thenReturn(expectedRegisterResponse);
 
         // when
-        UserAccount actualUserAccount = userAccountRepository.saveAndFlush(expectedUserAccount);
-        Role actualCustomerRole = roleService.saveOrGet(UserRole.ROLE_CUSTOMER);
-        RegisterResponse actualRegisterResponse = registerCustomerResponseMapper.apply(customerService.saveCustomer(customerRequest));
+        RegisterResponse actualRegisterResponse = authServiceImpl.registerCustomer(registerCustomerRequest);
 
         // then
-        assertEquals(expectedUserAccount, actualUserAccount);
-        assertEquals(expectedCustomerRole, actualCustomerRole);
+        verify(validationUtil, times(1))
+                .validate(registerCustomerRequest);
+        verify(roleService, times(1))
+                .saveOrGet(UserRole.ROLE_CUSTOMER);
         assertEquals(expectedRegisterResponse, actualRegisterResponse);
     }
 
@@ -150,15 +182,22 @@ class AuthServiceImplTest {
     void shouldSaveMerchantWhenRegisterMerchant() {
         // given
         Role expectedMerchantRole = Role.builder().role(UserRole.ROLE_MERCHANT).build();
-        UserAccount expectedUserAccount = UserAccount.builder()
-                .username("merchant")
-                .password("password")
-                .roles(List.of(expectedMerchantRole))
-                .build();
-        MerchantRequest merchantRequest = new MerchantRequest(
+        RegisterMerchantRequest registerMerchantRequest = new RegisterMerchantRequest(
                 "example-shop-name",
                 "example-phone",
                 "example-address",
+                "merchant",
+                "password"
+        );
+        UserAccount expectedUserAccount = UserAccount.builder()
+                .username(registerMerchantRequest.username())
+                .password(registerMerchantRequest.password())
+                .roles(List.of(expectedMerchantRole))
+                .build();
+        MerchantRequest merchantRequest = new MerchantRequest(
+                registerMerchantRequest.shopName(),
+                registerMerchantRequest.phone(),
+                registerMerchantRequest.address(),
                 expectedUserAccount
         );
         Merchant merchant = Merchant.builder()
@@ -171,26 +210,25 @@ class AuthServiceImplTest {
         RegisterResponse expectedRegisterMerchantResponse = registerMerchantResponseMapper.apply(merchant);
 
         // stubbing
-        Mockito
-                .when(userAccountRepository.saveAndFlush(expectedUserAccount))
+        doNothing().when(validationUtil).validate(registerMerchantRequest);
+        when(userAccountRepository.saveAndFlush(expectedUserAccount))
                 .thenReturn(expectedUserAccount);
-        Mockito
-                .when(roleService.saveOrGet(UserRole.ROLE_MERCHANT))
+        when(roleService.saveOrGet(UserRole.ROLE_MERCHANT))
                 .thenReturn(expectedMerchantRole);
-        Mockito
-                .when(registerMerchantResponseMapper.apply(merchantService.saveMerchant(merchantRequest)))
+        when(registerMerchantResponseMapper.apply(merchantService.saveMerchant(merchantRequest)))
                 .thenReturn(expectedRegisterMerchantResponse);
 
         // when
-        UserAccount actualUserAccount = userAccountRepository.saveAndFlush(expectedUserAccount);
-        Role actualMerchantRole = roleService.saveOrGet(UserRole.ROLE_MERCHANT);
-        RegisterResponse actualRegisterMerchantResponse = registerMerchantResponseMapper.apply(merchantService.saveMerchant(merchantRequest));
+        RegisterResponse actualRegisterMerchantResponse = authServiceImpl.registerMerchant(registerMerchantRequest);
 
         // then
-        assertEquals(expectedUserAccount, actualUserAccount);
-        assertEquals(expectedMerchantRole, actualMerchantRole);
+        verify(validationUtil, times(1))
+                .validate(registerMerchantRequest);
+        verify(validationUtil, times(1))
+                .validate(registerMerchantRequest);
+        verify(roleService, times(1))
+                .saveOrGet(UserRole.ROLE_MERCHANT);
         assertEquals(expectedRegisterMerchantResponse, actualRegisterMerchantResponse);
-
     }
 
     @Test
@@ -213,33 +251,20 @@ class AuthServiceImplTest {
         );
 
         // stubbing
-        Authentication authentication = Mockito.mock(Authentication.class);
-        Mockito
-                .when(authentication.getPrincipal())
+        Authentication authentication = mock(Authentication.class);
+        when(authentication.getPrincipal())
                 .thenReturn(expectedUserAccount);
-        Mockito.doNothing().when(validationUtil).validate(loginRequest);
-        Mockito
-                .when(authenticationManager.authenticate(Mockito.any()))
+        doNothing().when(validationUtil).validate(loginRequest);
+        when(authenticationManager.authenticate(any()))
                 .thenReturn(authentication);
-        Mockito
-                .when(jwtService.generateToken(expectedUserAccount))
+        when(jwtService.generateToken(expectedUserAccount))
                 .thenReturn(expectedToken);
 
         // when
-        validationUtil.validate(loginRequest);
-        Authentication authenticate = authenticationManager.authenticate(Mockito.any());
-        UserAccount actualUserAccount = (UserAccount) authenticate.getPrincipal();
-        String actualToken = jwtService.generateToken(expectedUserAccount);
-        LoginResponse actualLoginResponse = new LoginResponse(
-                actualUserAccount.getId(),
-                actualUserAccount.getUsername(),
-                actualToken,
-                actualUserAccount.getRoles().stream().map(role -> role.getRole().name()).toList()
-        );
+        LoginResponse actualLoginResponse = authServiceImpl.login(loginRequest);
 
         // then
-        assertEquals(expectedUserAccount, actualUserAccount);
-        assertEquals(expectedToken, actualToken);
+        verify(validationUtil, times(1)).validate(loginRequest);
         assertEquals(expectedLoginResponse, actualLoginResponse);
     }
 }

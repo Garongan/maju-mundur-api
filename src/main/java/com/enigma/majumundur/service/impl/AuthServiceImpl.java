@@ -64,6 +64,7 @@ public class AuthServiceImpl implements AuthService {
                         .build());
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public RegisterResponse registerCustomer(RegisterCustomerRequest request) {
         validationUtil.validate(request);
@@ -71,6 +72,7 @@ public class AuthServiceImpl implements AuthService {
         return getRegisterResponse(request, role);
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public RegisterResponse registerMerchant(RegisterMerchantRequest request) {
         validationUtil.validate(request);
@@ -78,6 +80,7 @@ public class AuthServiceImpl implements AuthService {
         return getRegisterResponse(request, role);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public LoginResponse login(LoginRequest request) {
         validationUtil.validate(request);
@@ -94,9 +97,9 @@ public class AuthServiceImpl implements AuthService {
                 userAccount.getRoles().stream().map(role -> role.getRole().name()).toList());
     }
 
+    @Transactional(readOnly = true)
     @Override
     public Boolean validateToken() {
-        // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'validateToken'");
     }
 
