@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,6 +27,7 @@ public class AuthController {
     private final AuthService authService;
 
     @Operation(summary = "Login")
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping(
             path = "/login",
             consumes = MediaType.APPLICATION_JSON_VALUE,
@@ -38,6 +40,7 @@ public class AuthController {
     }
 
     @Operation(summary = "RegisterCustomer")
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping(
             path = "/register-customer",
             consumes = MediaType.APPLICATION_JSON_VALUE,
@@ -54,6 +57,7 @@ public class AuthController {
     }
 
     @Operation(summary = "RegisterMerchant")
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping(
             path = "/register-merchant",
             consumes = MediaType.APPLICATION_JSON_VALUE,

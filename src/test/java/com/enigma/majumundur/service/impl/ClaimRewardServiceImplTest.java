@@ -42,10 +42,7 @@ class ClaimRewardServiceImplTest {
     @Test
     void shouldDecreaseCustomerPointWhenClaimReward() {
         // given
-        ClaimRewardRequest claimRewardRequest = new ClaimRewardRequest(
-                "example-customerid",
-                "example-rewardid"
-        );
+        ClaimRewardRequest claimRewardRequest = new ClaimRewardRequest("example-rewardid");
 
         Reward reward = Reward.builder()
                 .id("example-rewardid")

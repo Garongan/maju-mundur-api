@@ -22,8 +22,13 @@ import java.sql.SQLException;
 @RestControllerAdvice
 public class ErrorController {
     @ExceptionHandler({Exception.class})
-    public ResponseEntity<?> responseStatusExceptionHandler(HttpStatus httpStatus, ResponseStatusException e) {
-        return errorResponse(e.getMessage(), httpStatus.value());
+    public ResponseEntity<?> handleException(Exception e) {
+        return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler({ResponseStatusException.class})
+    public ResponseEntity<?> responseStatusExceptionHandler(ResponseStatusException e) {
+        return errorResponse(e.getReason(), e.getStatusCode().value());
     }
 
     @ExceptionHandler({DataIntegrityViolationException.class})
@@ -32,7 +37,7 @@ public class ErrorController {
     }
 
     @ExceptionHandler({ConstraintViolationException.class, IOException.class, JsonParseException.class, JsonMappingException.class, HttpMessageNotReadableException.class})
-    public ResponseEntity<?> constraintViolationHandler(ConstraintViolationException e) {
+    public ResponseEntity<?> constraintViolationHandler() {
         return errorResponse(StatusMessage.BAD_REQUEST, HttpStatus.BAD_REQUEST.value());
     }
 

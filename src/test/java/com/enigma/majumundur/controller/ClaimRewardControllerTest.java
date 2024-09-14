@@ -43,13 +43,10 @@ class ClaimRewardControllerTest {
     }
 
     @Test
-    @WithMockUser(username = "username", roles = {"USER"})
+    @WithMockUser(username = "username")
     void shouldReturn200StatusAndCommonResponseWhenClaimReward() throws Exception {
         // given
-        ClaimRewardRequest claimRewardRequest = new ClaimRewardRequest(
-                "userId",
-                "rewardId"
-        );
+        ClaimRewardRequest claimRewardRequest = new ClaimRewardRequest("rewardId");
 
         ClaimRewardResponse claimRewardResponse = new ClaimRewardResponse(
                 "userId",

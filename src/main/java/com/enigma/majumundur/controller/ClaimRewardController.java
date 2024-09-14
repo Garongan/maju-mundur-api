@@ -27,7 +27,7 @@ public class ClaimRewardController {
 
     @Operation(summary = "Claim Reward")
     @SecurityRequirement(name = "Authorization")
-    @PreAuthorize("hasRole('USER') and isAuthenticated()")
+    @PreAuthorize("hasRole('CUSTOMER')")
     @PostMapping(
             produces = MediaType.APPLICATION_JSON_VALUE,
             consumes = MediaType.APPLICATION_JSON_VALUE

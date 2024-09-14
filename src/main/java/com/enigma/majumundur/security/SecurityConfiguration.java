@@ -27,7 +27,7 @@ public class SecurityConfiguration {
         return security
                 .securityMatcher("/api-docs/**")
                 .securityMatcher("/swagger-ui/**")
-                .securityMatcher("/api/auth/login")
+                .securityMatcher("/api/auth/**")
                 .authorizeHttpRequests(request -> request
                         .dispatcherTypeMatchers(DispatcherType.ERROR).permitAll()
 //                        .requestMatchers("/api-docs/**", "/swagger-ui/**", "/api/auth/login").permitAll()
